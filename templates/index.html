@@ -1,0 +1,182 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indian News Summary</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script>
+        // Check dark mode preference immediately to prevent flash
+        if (localStorage.getItem('darkMode') === 'true' || 
+            window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+        }
+    </script>
+    <style>
+        :root {
+            color-scheme: light dark;
+        }
+
+        .card {
+            transform: translateY(20px);
+            opacity: 0;
+            animation: fadeInUp 0.6s ease forwards;
+        }
+        
+        @keyframes fadeInUp {
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        /* Fixed animation delays for cards */
+        .card:nth-child(1) { animation-delay: 0.1s; }
+        .card:nth-child(2) { animation-delay: 0.2s; }
+        .card:nth-child(3) { animation-delay: 0.3s; }
+        .card:nth-child(4) { animation-delay: 0.4s; }
+        .card:nth-child(5) { animation-delay: 0.5s; }
+        .card:nth-child(6) { animation-delay: 0.6s; }
+        .card:nth-child(7) { animation-delay: 0.7s; }
+        .card:nth-child(8) { animation-delay: 0.8s; }
+        .card:nth-child(9) { animation-delay: 0.9s; }
+        .card:nth-child(10) { animation-delay: 1s; }
+
+        /* Smooth transition for dark mode */
+        * {
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, 
+                       box-shadow 0.3s ease;
+        }
+
+        /* Custom hover effect for cards */
+        .card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px) scale(1.01);
+        }
+
+        /* Heartbeat animation for footer */
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            25% { transform: scale(1.1); }
+            50% { transform: scale(1); }
+        }
+
+        .heart {
+            display: inline-block;
+            color: #e11d48;
+            animation: heartbeat 1s infinite;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gray-100 dark:bg-gray-900 transition-colors duration-300 flex flex-col">
+    <div class="container mx-auto px-4 py-8 flex-grow">
+        <!-- Header with Dark Mode Toggle -->
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-4xl font-bold text-gray-800 dark:text-white">Latest Indian News</h1>
+            <button 
+                onclick="toggleDarkMode()" 
+                class="px-4 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white
+                       hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-300
+                       focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
+                id="darkModeToggle"
+                aria-label="Toggle dark mode"
+            >
+                <span class="dark:hidden">🌙</span>
+                <span class="hidden dark:inline">☀️</span>
+            </button>
+        </div>
+        
+        <!-- News Grid -->
+        <div class="grid gap-8 md:grid-cols-2" id="newsContainer">
+            {% for news in news_items %}
+            <article class="card bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden
+                          hover:shadow-2xl dark:shadow-gray-700/30">
+                <div class="p-6">
+                    <!-- Header Section -->
+                    <div class="flex justify-between items-start mb-4">
+                        <span class="inline-block bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-100
+                                   text-xs px-3 py-1 rounded-full font-medium">
+                            {{ news.source }}
+                        </span>
+                        <time class="text-sm text-gray-500 dark:text-gray-400">{{ news.date }}</time>
+                    </div>
+                    
+                    <!-- Content Section -->
+                    <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-white">{{ news.title }}</h2>
+                    <p class="text-gray-600 dark:text-gray-300 mb-6 line-clamp-3">{{ news.description }}</p>
+                    
+                    <!-- Footer Section -->
+                    <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
+                        <a href="{{ news.link }}" 
+                           target="_blank" 
+                           class="inline-flex items-center justify-center w-full px-4 py-2 
+                                  bg-blue-600 dark:bg-blue-500 hover:bg-blue-700 dark:hover:bg-blue-600 
+                                  text-white rounded-lg transition-colors duration-300
+                                  focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
+                        >
+                            Read Full Article →
+                        </a>
+                    </div>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="py-6 bg-white dark:bg-gray-800 shadow-lg mt-8">
+        <div class="container mx-auto px-4">
+            <p class="text-center text-gray-600 dark:text-gray-300 text-sm">
+                Made with <span class="heart">❤️</span> by 
+                <a href="https://github.com/siteshmuduli" 
+                   target="_blank"
+                   class="font-medium text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 
+                          transition-colors duration-300">
+                    Sitesh Muduli
+                </a>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        function toggleDarkMode() {
+            const html = document.documentElement;
+            html.classList.toggle('dark');
+            
+            // Save preference
+            localStorage.setItem('darkMode', html.classList.contains('dark'));
+            
+            // Animate the toggle button
+            const button = document.getElementById('darkModeToggle');
+            button.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                button.style.transform = 'scale(1)';
+            }, 100);
+        }
+
+        // Add intersection observer for card animations
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            },
+            {
+                threshold: 0.1
+            }
+        );
+
+        // Observe all cards
+        document.querySelectorAll('.card').forEach(card => {
+            observer.observe(card);
+        });
+    </script>
+</body>
+</html>
